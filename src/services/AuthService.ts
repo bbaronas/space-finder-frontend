@@ -21,8 +21,15 @@ export class AuthService {
 
     private user: SignInOutput | undefined;
     private userName: string = '';
-    private jwtToken: string | undefined;
+    public jwtToken: string | undefined;
     private temporaryCredentials: AwsCredentialIdentity | undefined;
+
+    public isAuthorized() {
+        if (this.user) {
+            return true;
+        }
+        return false;
+    }
 
     public async login(userName: string, password: string): Promise<object | undefined> {
         try {
@@ -56,7 +63,7 @@ export class AuthService {
     }
 
     private async generateTempCredentials(): Promise<AwsCredentialIdentity> {
-        const cognitoIdentityPool = `cognito-idp.${awsRegion}.amazonaws.com/${AuthStack.SpaceIdentityPoolId}`;
+        const cognitoIdentityPool = `cognito-idp.${awsRegion}.amazonaws.com/${AuthStack.SpaceUserPoolId}`;
         const cognitoIdentity = new CognitoIdentityClient({
             credentials: fromCognitoIdentityPool({
                 clientConfig: { region: awsRegion },

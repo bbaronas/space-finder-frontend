@@ -1,8 +1,9 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { AuthService } from "./AuthService";
-import { DataStack } from "../../../space-finder/outputs.json";
+import { DataStack, ApiStack } from "../../../space-finder/outputs.json";
+import { SpaceEntry } from "../components/model/model";
 
-
+const spacesUrl = ApiStack.SpacesApiEndpoint36C4F3B6 + 'spaces'
 
 
 export class DataService {
@@ -15,13 +16,39 @@ export class DataService {
         this.authService = authService;
     }
 
+    public reserveSpace(spaceId: string) {
+        return '123';
+    }
+
+    public async getSpaces(): Promise<SpaceEntry[]> {
+        const getSpacesResult = await fetch(spacesUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': this.authService.jwtToken!,
+            }
+        });
+        const getSpacesResultJSON = await getSpacesResult.json();
+        return getSpacesResultJSON;
+    }
+
     public async createSpace(name: string, location:string, photo?: File) {
+        const space = {} as any;
+        space.name = name;
+        space.location = location;
         if (photo) {
             const uploadUrl = await this.uploadPublicFile(photo)
-            console.log(uploadUrl);
+            space.photoUrl = uploadUrl;
         };
+        const postResult = await fetch(spacesUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': this.authService.jwtToken!,
+            },
+            body: JSON.stringify(space)
+        });
 
-        return '123';
+        const postResultJSON = await postResult.json();
+        return postResultJSON.id;
     }
 
     private async uploadPublicFile(file: File) {
@@ -43,6 +70,6 @@ export class DataService {
     }
 
     public isAuthorized() {
-        return true;
+        return this.authService.isAuthorized();
     }
 }

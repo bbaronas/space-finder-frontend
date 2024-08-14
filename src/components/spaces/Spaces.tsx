@@ -35,7 +35,7 @@ export default function Spaces(props: SpacesProps){
         if(spaces) {
             for(const spaceEntry of spaces) {
                 rows.push(
-                    <SpaceComponent 
+                    <SpaceComponent
                         key={spaceEntry.id}
                         id={spaceEntry.id}
                         location={spaceEntry.location}
@@ -56,7 +56,7 @@ export default function Spaces(props: SpacesProps){
             {reservationText? <h2>{reservationText}</h2>: undefined}
             {renderSpaces()}
         </div>
-    )        
-    
+    )
+
 
 }
